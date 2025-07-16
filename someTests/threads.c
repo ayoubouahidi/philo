@@ -68,52 +68,91 @@
 
 //  example 3
 
-void *print_something()
+// typedef struct _profil
+// {
+// 	int *max_int;
+// 	int 
+// }
+
+// void *print_something()
+// {
+// 	int *randome;
+// 	randome = malloc(sizeof(int));
+// 	*randome = (rand() % 6) + 1;
+// 	return ((void *) randome);
+// }
+
+// void *while_it()
+// {
+// 	int i;
+// 	int *result;
+
+// 	result = malloc(sizeof(int));
+// 	*result = 0;
+// 	i = 0;
+// 	while (i < 7)
+// 	{
+// 		*result += i;
+// 		i++;
+// 	}
+// 	return ((void *) result);
+// }
+// int main()
+// {
+// 	pthread_t p1;
+// 	pthread_t p2;
+// 	int *random;
+// 	int *fract;
+// 	// void	*pt_exit;
+
+// 	srand(time(0));
+// 	printf("the start of the programme\n");
+// 	sleep(1);
+// 	pthread_create(&p1, NULL, &print_something, NULL);
+// 	pthread_create(&p2, NULL, &while_it, NULL);
+// 	pthread_join(p1, (void **)&random);
+// 	pthread_join(p2, (void **)&fract);
+// 	printf("the randome number is %d\n", *random);
+// 	printf("the fract number is %d\n", *fract);
+// 	free(random);
+// 	free(fract);
+// 	return (0);
+// }
+
+//  example 4 
+
+
+void	*routine(void *args)
 {
-	int *randome;
-	randome = malloc(sizeof(int));
-	*randome = (rand() % 6) + 1;
-	return ((void *) randome);
+	int arr[10] = {1,2,3,4,5,6,7,8,9, 10};
+	int index = *(int*)args;
+	printf("the odd number is %d\n", index);
 }
 
-void *while_it()
-{
-	int i;
-	int *result;
-
-	result = malloc(sizeof(int));
-	*result = 0;
-	i = 0;
-	while (i < 7)
-	{
-		*result += i;
-		i++;
-	}
-	return ((void *) result);
-}
 int main()
 {
-	pthread_t p1;
-	pthread_t p2;
-	int *random;
-	int *fract;
-	// void	*pt_exit;
+	pthread_t t1[10];
+	int i;
+	int *number;;
 
-	srand(time(0));
-	printf("the start of the programme\n");
-	sleep(1);
-	pthread_create(&p1, NULL, &print_something, NULL);
-	pthread_create(&p2, NULL, &while_it, NULL);
-	pthread_join(p1, (void **)&random);
-	pthread_join(p2, (void **)&fract);
-	printf("the randome number is %d\n", *random);
-	printf("the fract number is %d\n", *fract);
-	free(random);
-	free(fract);
-	return (0);
+	i = 0;
+	while (i < 10)
+	{
+		number = malloc(sizeof(int));
+		*number = i;
+		if (i % 2 == 0)
+			pthread_create(&t1[i], NULL, &routine, number);
+		i++;
+	}
+	i = 0;
+	while (i < 10)
+	{
+		if (i % 2 == 0)
+			pthread_join(t1[i], NULL);
+		i++;
+	}
+	
 }
-
-
 
 
 
