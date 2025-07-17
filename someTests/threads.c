@@ -167,38 +167,49 @@
 //  example 5
 
 static int glob = 0;
+pthread_mutex_t mutex;
+
 static void	*threadFunc(void *arg)
 {
- int loops = *((int *) arg);
- int loc, j;
- for (j = 0; j < loops; j++) {
-	loc = glob;
-	loc++;
-	glob = loc;
- }
- return NULL;
+	int loops = *((int *) arg);
+	int loc, j;
+	// pthread_mutex_t mutex;
+
+	for (j = 0; j < loops; j++) 
+	{
+		pthread_mutex_lock(&mutex);
+		loc = glob;
+		loc++;
+		glob = loc;
+		pthread_mutex_unlock(&mutex);
+	}
+	return NULL;
 }
 
 int	main(int argc, char *argv[])
 {
- pthread_t t1, t2;
- int loops, s;
+	pthread_t t1, t2;
+	int loops, s;
+	
 
- loops = 1000000;
- s = pthread_create(&t1, NULL, threadFunc, &loops);
- if (s != 0)
-	 perror("err");
- s = pthread_create(&t2, NULL, threadFunc, &loops);
- if (s != 0)
- 	perror("err");
- s = pthread_join(t1, NULL);
- if (s != 0)
- 	perror("err");
- s = pthread_join(t2, NULL);
- if (s != 0)
- 	perror("err");
- printf("glob = %d\n", glob);
- exit(EXIT_SUCCESS);
+	pthread_mutex_init(&mutex, NULL);
+
+	loops = 10000000;
+	s = pthread_create(&t1, NULL, threadFunc, &loops);
+	if (s != 0)
+		perror("err");
+	s = pthread_create(&t2, NULL, threadFunc, &loops);
+	if (s != 0)
+		perror("err");
+	s = pthread_join(t1, NULL);
+	if (s != 0)
+		perror("err");
+	s = pthread_join(t2, NULL);
+	if (s != 0)
+		perror("err");
+	printf("glob = %d\n", glob);
+	pthread_mutex_destroy(&mutex);
+	return 0;
 }
 
 
