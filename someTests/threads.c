@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
+// #include "tlpi_hdr.h"
 
 // void *prints_test()
 // {
@@ -122,40 +123,83 @@
 //  example 4 
 
 
-void	*routine(void *args)
-{
-	int arr[10] = {1,2,3,4,5,6,7,8,9, 10};
-	int index = *(int*)args;
-	printf("the odd number is %d\n", index);
-}
+// int iv = 0;
+// void	*routine(void *args)
+// {
+// 	int arr[11] = {0,1,2,3,4,5,6,7,8,9, 10};
+// 	int index = *(int*)args;
+// 	while (iv < index)
+// 	{
+		
+// 	}
+// 	printf("the number is %d\n", arr[index]);
+// 	iv += 2;
+// 	free(args);
+// 	return 0;
+// }
 
-int main()
-{
-	pthread_t t1[10];
-	int i;
-	int *number;;
+// int main()
+// {
+// 	pthread_t t1[10];
+// 	int i;
+// 	int *number;
 
-	i = 0;
-	while (i < 10)
-	{
-		number = malloc(sizeof(int));
-		*number = i;
-		if (i % 2 == 0)
-			pthread_create(&t1[i], NULL, &routine, number);
-		i++;
-	}
-	i = 0;
-	while (i < 10)
-	{
-		if (i % 2 == 0)
-			pthread_join(t1[i], NULL);
-		i++;
-	}
+// 	i = 0;
+// 	while (i < 10)
+// 	{
+// 		number = malloc(sizeof(int));
+// 		*number = i;
+// 		if (i % 2 == 0)
+// 			pthread_create(&t1[i], NULL, &routine, number);
+// 		i++;
+// 	}
+// 	i = 0;
+// 	while (i < 10)
+// 	{
+// 		if (i % 2 == 0)
+// 			pthread_join(t1[i], NULL);
+// 		i++;
+// 	}
 	
+// }
+
+
+//  example 5
+
+static int glob = 0;
+static void	*threadFunc(void *arg)
+{
+ int loops = *((int *) arg);
+ int loc, j;
+ for (j = 0; j < loops; j++) {
+	loc = glob;
+	loc++;
+	glob = loc;
+ }
+ return NULL;
 }
 
+int	main(int argc, char *argv[])
+{
+ pthread_t t1, t2;
+ int loops, s;
 
-
+ loops = 1000000;
+ s = pthread_create(&t1, NULL, threadFunc, &loops);
+ if (s != 0)
+	 perror("err");
+ s = pthread_create(&t2, NULL, threadFunc, &loops);
+ if (s != 0)
+ 	perror("err");
+ s = pthread_join(t1, NULL);
+ if (s != 0)
+ 	perror("err");
+ s = pthread_join(t2, NULL);
+ if (s != 0)
+ 	perror("err");
+ printf("glob = %d\n", glob);
+ exit(EXIT_SUCCESS);
+}
 
 
 
