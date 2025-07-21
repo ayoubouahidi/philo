@@ -95,3 +95,5 @@ long	ft_atoi_err(const char *str, int *err)
 	}
 	return (fornotminette1(result, cmpt, cmpmoins, err));
 }
+
+

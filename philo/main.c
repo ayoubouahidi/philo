@@ -29,7 +29,7 @@ t_data	*initialisation_of_vars(char **av, int ac)
 	data->time_to_die = ft_atoi(av[2]);
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
-	if (ac == 6)
+	if (ac == 6 && ft_atoi(av[5]) != 0)
 		data->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
 	data->philos = malloc(sizeof(t_philo) * data->number_of_philo);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philo);
@@ -84,7 +84,7 @@ bool	check_args(int ac, char **av)
 }
 
 
-int	main(int ac, char **av)
+int	main(int ac, char *av[])
 {	
 	t_data *data;
 
@@ -92,9 +92,14 @@ int	main(int ac, char **av)
 		return (0);
 	if (!check_args(ac, av))
 		return (0);
+	
 	data = initialisation_of_vars(av, ac);
-	// printf("time is  = %lu \n", data->start_time);
+	// printf("NUMBER OF MEALS ==> %d\n", data->number_of_times_each_philosopher_must_eat);
+	if (data->number_of_philo == 0 )
+	{
+		printf("INVALID INPUT\n");
+		return (0);
+	}
 	creat_threads(data);
-	// printf("number of philos is => %d\n", data->number_of_philo);
 	return (0);
 }
