@@ -43,6 +43,7 @@ t_data	*initialisation_of_vars(char **av, int ac)
 		data->philos[i].fork_l = i ;
 		data->philos[i].fork_r = (i + 1) % data->number_of_philo ;
 		data->philos[i].last_meal = data->start_time;
+		data->philos[i].meal_count = 0;
 		i++;
 	}
 	return (data);

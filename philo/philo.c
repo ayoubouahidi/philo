@@ -41,6 +41,7 @@ void eating(t_philo *philo)
 {
 	take_fork(philo);
 	ft_printstatus(philo, "is eating");
+	philo->meal_count++;
 	pthread_mutex_lock(&(philo->data->used__mtx[MEAL]));
 	philo->last_meal = get_time();
 	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL]));
@@ -51,8 +52,6 @@ void eating(t_philo *philo)
 void sleeping(t_philo *philo)
 {
 	ft_printstatus(philo, "is sleeping");
-	// if (check_death(philo->data))
-	// 	return ;
 	ft_usleep(philo->data->time_to_sleep, philo->data);
 }
 
@@ -77,6 +76,7 @@ void	*routine(void *args)
 	{
 		if (check_death(philo->data))
 			return (NULL);
+		
 		i %= 3;
 		ptr[i](philo);
 		i++;

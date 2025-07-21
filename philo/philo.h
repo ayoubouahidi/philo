@@ -12,11 +12,13 @@ typedef struct s_data	s_data;
 #define DEATH 2
 #define MEAL 3
 
+
 typedef struct s_philo
 {
 	int					id;
 	int					fork_l;
 	int					fork_r;
+	int					meal_count;
 	size_t				last_meal;
 	struct s_data		*data;
 }						t_philo;
