@@ -37,46 +37,87 @@ void	check_if_number_one(t_philo *philo)
 	}
 }
 
-void eating(t_philo *philo)
+void	eating(t_philo *philo)
 {
+	int	finished_eating;
+
+	finished_eating = 0;
+	pthread_mutex_lock(&(philo->data->used__mtx[FINISH]));
+	if (philo->finish_eating)
+	{
+		pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
+		return ;
+	}
+	pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
 	take_fork(philo);
 	ft_printstatus(philo, "is eating");
-	philo->meal_count++;
 	pthread_mutex_lock(&(philo->data->used__mtx[MEAL]));
+	pthread_mutex_lock(&(philo->data->used__mtx[MEAL_COUNT]));
+	philo->meal_count++;
 	philo->last_meal = get_time();
-	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL]));
+	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
 	ft_usleep(philo->data->time_to_eat, philo->data);
+	if (philo->data->number_of_times_each_philosopher_must_eat != -1
+		&& philo->meal_count == philo->data->number_of_times_each_philosopher_must_eat)
+	{
+		finished_eating = 1;
+		
+	}
+	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL]));
+	if (finished_eating)
+	{
+		pthread_mutex_lock(&(philo->data->used__mtx[GLB_FINISH]));
+		philo->data->philos_finished_eating++;
+		pthread_mutex_unlock(&(philo->data->used__mtx[GLB_FINISH]));
+		pthread_mutex_lock(&(philo->data->used__mtx[FINISH]));
+		philo->finish_eating = 1;
+		pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
+	}
 	put_forks(philo);
 }
 
-void sleeping(t_philo *philo)
+void	sleeping(t_philo *philo)
 {
 	ft_printstatus(philo, "is sleeping");
 	ft_usleep(philo->data->time_to_sleep, philo->data);
 }
 
-void thinking(t_philo *philo) 
+void	thinking(t_philo *philo)
 {
 	ft_printstatus(philo, "is thinking");
 	if (philo->data->number_of_philo % 2 == 1)
 		ft_usleep(15, philo->data);
 }
 
+int	all_philos_eating(t_data *data)
+{
+	int result;
+
+	result = 0;
+	if (data->number_of_times_each_philosopher_must_eat == -1)
+		return 0;
+	pthread_mutex_lock(&(data->used__mtx[GLB_FINISH]));
+	if (data->philos_finished_eating >= data->number_of_times_each_philosopher_must_eat)
+		result = 1;
+	pthread_mutex_unlock(&(data->used__mtx[GLB_FINISH]));
+	return (result);
+}
+
 void	*routine(void *args)
 {
-	t_philo *philo;
-	int i = 0;
+	t_philo	*philo;
+	int		i;
 
+	i = 0;
 	philo = (t_philo *)args;
-	void (*ptr[])(t_philo*) = {eating, sleeping, thinking};
+	void (*ptr[])(t_philo *) = {eating, sleeping, thinking};
 	if (philo->id % 2 != 0)
 		usleep(500);
 	check_if_number_one(philo);
 	while (1)
 	{
-		if (check_death(philo->data))
+		if (check_death(philo->data) || all_philos_eating(philo->data))
 			return (NULL);
-		
 		i %= 3;
 		ptr[i](philo);
 		i++;
@@ -84,10 +125,9 @@ void	*routine(void *args)
 	return (NULL);
 }
 
-void monitoring(t_data *data)
+void	monitoring(t_data *data)
 {
-	int i;
-
+	int	i;
 
 	while (1)
 	{
@@ -101,7 +141,7 @@ void monitoring(t_data *data)
 				pthread_mutex_lock(&(data->used__mtx[PRINT]));
 				pthread_mutex_lock(&(data->used__mtx[DEATH]));
 				data->flag_death = 1;
-				printf("%lld %d %s \n", get_time() , data->philos[i].id, "died");
+				printf("%lld %d %s \n", get_time(), data->philos[i].id, "died");
 				pthread_mutex_unlock(&(data->used__mtx[DEATH]));
 				pthread_mutex_unlock(&(data->used__mtx[PRINT]));
 				return ;
@@ -109,15 +149,19 @@ void monitoring(t_data *data)
 			pthread_mutex_unlock(&data->used__mtx[MEAL]);
 			i++;
 		}
+		if (all_philos_eating(data))
+		{
+			printf("all philos have eaten\n");
+			return ;
+		}
 	}
 }
 
 void	creat_threads(t_data *data)
 {
-	int i;
+	int			i;
 	pthread_t	arr_threads[data->number_of_philo];
 
-	// data->start_time = get_time();
 	i = 0;
 	while (i < data->number_of_philo)
 	{

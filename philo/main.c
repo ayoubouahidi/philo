@@ -18,6 +18,24 @@ void	initialisation_mutex(t_data *data)
 	}
 }
 
+void	initialisation_philos(t_data *data)
+{
+	int i;
+
+	i = 0;
+	while (i < data->number_of_philo)
+	{
+		data->philos[i].id = i + 1;
+		data->philos[i].data = data;
+		data->philos[i].fork_l = i ;
+		data->philos[i].fork_r = (i + 1) % data->number_of_philo ;
+		data->philos[i].last_meal = data->start_time;
+		data->philos[i].meal_count = 0;
+		data->philos[i].finish_eating = 0;
+		i++;
+	}
+}
+
 t_data	*initialisation_of_vars(char **av, int ac)
 {
 	t_data	*data;
@@ -29,23 +47,17 @@ t_data	*initialisation_of_vars(char **av, int ac)
 	data->time_to_die = ft_atoi(av[2]);
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
-	if (ac == 6 && ft_atoi(av[5]) != 0)
+	if (ac == 6)
 		data->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
+	else 
+		data->number_of_times_each_philosopher_must_eat = -1;
 	data->philos = malloc(sizeof(t_philo) * data->number_of_philo);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philo);
 	data->used__mtx = malloc(sizeof(pthread_mutex_t) * SIZE_MTX_US);
 	data->flag_death = 0;
 	initialisation_mutex(data);
-	while (i < data->number_of_philo)
-	{
-		data->philos[i].id = i + 1;
-		data->philos[i].data = data;
-		data->philos[i].fork_l = i ;
-		data->philos[i].fork_r = (i + 1) % data->number_of_philo ;
-		data->philos[i].last_meal = data->start_time;
-		data->philos[i].meal_count = 0;
-		i++;
-	}
+	initialisation_philos(data);
+	data->philos_finished_eating = 0;
 	return (data);
 }
 
@@ -95,8 +107,7 @@ int	main(int ac, char *av[])
 		return (0);
 	
 	data = initialisation_of_vars(av, ac);
-	// printf("NUMBER OF MEALS ==> %d\n", data->number_of_times_each_philosopher_must_eat);
-	if (data->number_of_philo == 0 )
+	if (data->number_of_philo == 0 || data->number_of_times_each_philosopher_must_eat == 0)
 	{
 		printf("INVALID INPUT\n");
 		return (0);

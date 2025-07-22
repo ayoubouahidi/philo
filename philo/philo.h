@@ -6,11 +6,14 @@
 #include <unistd.h>
 typedef struct s_data	s_data;
 
-#define SIZE_MTX_US 4
+#define SIZE_MTX_US 7
 #define EAT 0
 #define PRINT 1
 #define DEATH 2
 #define MEAL 3
+#define FINISH 4
+#define MEAL_COUNT 5
+#define GLB_FINISH 6
 
 
 typedef struct s_philo
@@ -21,6 +24,7 @@ typedef struct s_philo
 	int					meal_count;
 	size_t				last_meal;
 	struct s_data		*data;
+	int					finish_eating;
 }						t_philo;
 
 typedef struct s_data
@@ -35,6 +39,7 @@ typedef struct s_data
 	pthread_mutex_t		*used__mtx;
 	t_philo				*philos;
 	int					flag_death;
+	int					philos_finished_eating;
 
 }						t_data;
 
