@@ -33,7 +33,7 @@ int main(void)
 
 /*
 	test 1 :  % ./philo 199 190 60 60 5 : not done yet 
-	
+	test 3 : ./philo 200 130 60 60 
 
 
 */

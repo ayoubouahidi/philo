@@ -6,7 +6,7 @@
 #include <unistd.h>
 typedef struct s_data	s_data;
 
-#define SIZE_MTX_US 7
+#define SIZE_MTX_US 9
 #define EAT 0
 #define PRINT 1
 #define DEATH 2
@@ -14,7 +14,8 @@ typedef struct s_data	s_data;
 #define FINISH 4
 #define MEAL_COUNT 5
 #define GLB_FINISH 6
-
+#define	SIM 7
+#define TIME_MUTEX 8
 
 typedef struct s_philo
 {
@@ -34,13 +35,14 @@ typedef struct s_data
 	int					time_to_eat;
 	int					time_to_sleep;
 	int					number_of_times_each_philosopher_must_eat;
-	size_t				start_time;
 	pthread_mutex_t		*forks;
 	pthread_mutex_t		*used__mtx;
+
 	t_philo				*philos;
 	int					flag_death;
+	int					sim;
 	int					philos_finished_eating;
-
+	long long			start_time;
 }						t_data;
 
 int						ft_strlen(char *str);
@@ -48,7 +50,7 @@ int						ft_isdigit(int c);
 long					ft_atoi(const char *str);
 long					ft_atoi_err(const char *str, int *err);
 void					creat_threads(t_data *data);
-long long				get_time(void);
+long long				get_time(t_data *data);
 void					ft_printstatus(t_philo *philo, char *status);
 bool					check_death(t_data *data);
 int						ft_usleep(long long milliseconds, t_data *data);

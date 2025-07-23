@@ -55,6 +55,8 @@ t_data	*initialisation_of_vars(char **av, int ac)
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philo);
 	data->used__mtx = malloc(sizeof(pthread_mutex_t) * SIZE_MTX_US);
 	data->flag_death = 0;
+	data->sim = -1;
+	data->start_time = 0;
 	initialisation_mutex(data);
 	initialisation_philos(data);
 	data->philos_finished_eating = 0;
@@ -110,6 +112,9 @@ int	main(int ac, char *av[])
 	if (data->number_of_philo == 0 || data->number_of_times_each_philosopher_must_eat == 0)
 	{
 		printf("INVALID INPUT\n");
+		free(data->philos);
+		free(data->forks);
+		// pthread_mutex_destroy(&data->used__mtx);
 		return (0);
 	}
 	creat_threads(data);

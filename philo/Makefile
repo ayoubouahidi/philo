@@ -1,7 +1,7 @@
 NAME = philo
 
 CC = cc -g
-CFLAGS = -Wall -Wextra -Werror 
+CFLAGS = -Wall -Wextra -Werror
 
 
 SRCS =  main.c utils.c utils_philos.c philo.c 
