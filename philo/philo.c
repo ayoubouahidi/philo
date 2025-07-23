@@ -11,6 +11,7 @@ void	take_fork(t_philo *philo)
 	}
 	else
 	{
+		usleep(1000);
 		pthread_mutex_lock(&(philo->data->forks[philo->fork_r]));
 		ft_printstatus(philo, "has taken a fork");
 		pthread_mutex_lock(&(philo->data->forks[philo->fork_l]));
@@ -51,21 +52,21 @@ void	eating(t_philo *philo)
 	pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
 	take_fork(philo);
 	ft_printstatus(philo, "is eating");
-	pthread_mutex_lock(&(philo->data->used__mtx[MEAL]));
 	pthread_mutex_lock(&(philo->data->used__mtx[MEAL_COUNT]));
 	philo->meal_count++;
-	philo->last_meal = get_time();
 	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
-	ft_usleep(philo->data->time_to_eat, philo->data);
-	if (philo->data->number_of_times_each_philosopher_must_eat != -1
-		&& philo->meal_count == philo->data->number_of_times_each_philosopher_must_eat)
-	{
-		finished_eating = 1;
-		
-	}
+	pthread_mutex_lock(&(philo->data->used__mtx[MEAL]));
+	philo->last_meal = get_time();
 	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL]));
+	ft_usleep(philo->data->time_to_eat, philo->data);
+	// printf("DEBUG :philo id : %d meal_count is %d\n", philo->id, philo->meal_count);
+	pthread_mutex_lock(&(philo->data->used__mtx[MEAL_COUNT]));
+	if (philo->data->number_of_times_each_philosopher_must_eat != -1 && philo->meal_count == philo->data->number_of_times_each_philosopher_must_eat)
+		finished_eating = 1;
+	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
 	if (finished_eating)
 	{
+		// printf("im here philo id %d\n", philo->id);
 		pthread_mutex_lock(&(philo->data->used__mtx[GLB_FINISH]));
 		philo->data->philos_finished_eating++;
 		pthread_mutex_unlock(&(philo->data->used__mtx[GLB_FINISH]));
@@ -97,7 +98,7 @@ int	all_philos_eating(t_data *data)
 	if (data->number_of_times_each_philosopher_must_eat == -1)
 		return 0;
 	pthread_mutex_lock(&(data->used__mtx[GLB_FINISH]));
-	if (data->philos_finished_eating >= data->number_of_times_each_philosopher_must_eat)
+	if (data->philos_finished_eating >= data->number_of_philo)
 		result = 1;
 	pthread_mutex_unlock(&(data->used__mtx[GLB_FINISH]));
 	return (result);
@@ -105,8 +106,8 @@ int	all_philos_eating(t_data *data)
 
 void	*routine(void *args)
 {
-	t_philo	*philo;
-	int		i;
+	t_philo		*philo;
+	int			i;
 
 	i = 0;
 	philo = (t_philo *)args;
@@ -116,13 +117,12 @@ void	*routine(void *args)
 	check_if_number_one(philo);
 	while (1)
 	{
-		if (check_death(philo->data) || all_philos_eating(philo->data))
+		if (all_philos_eating(philo->data) || check_death(philo->data))
 			return (NULL);
 		i %= 3;
 		ptr[i](philo);
 		i++;
 	}
-	return (NULL);
 }
 
 void	monitoring(t_data *data)
@@ -132,8 +132,14 @@ void	monitoring(t_data *data)
 	while (1)
 	{
 		i = 0;
-		while (i < data->number_of_philo)
+		while (i < data->number_of_philo )
 		{
+			if (all_philos_eating(data))
+			{
+				printf("all philos have eaten\n");
+				exit(0) ;
+				return ;
+			}
 			pthread_mutex_lock(&(data->used__mtx[MEAL]));
 			if (get_time() - data->philos[i].last_meal > data->time_to_die)
 			{
@@ -149,11 +155,7 @@ void	monitoring(t_data *data)
 			pthread_mutex_unlock(&data->used__mtx[MEAL]);
 			i++;
 		}
-		if (all_philos_eating(data))
-		{
-			printf("all philos have eaten\n");
-			return ;
-		}
+
 	}
 }
 

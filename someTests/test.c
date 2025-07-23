@@ -2,19 +2,19 @@
 #include <string.h>
 char    *ft_strncpy(char *dest, char *src, unsigned int n)
 {
-    unsigned int    i;
+    // unsigned int    i;
 
-    i = 0;
-    while (i < n && src[i] != '\0')
-    {
-        dest[i] = src[i];
-        i++;
-    }
-    while (i < n)
-    {
-        dest[i] = '\0';
-        i++;
-    }
+    // i = 0;
+    // while (i < n && src[i] != '\0')
+    // {
+    //     dest[i] = src[i];
+    //     i++;
+    // }
+    // while (i < n)
+    // {
+    //     dest[i] = '\0';
+    //     i++;
+    // }
     return (dest);
 }
 
@@ -27,3 +27,13 @@ int main(void)
     
     return 0;
 }
+
+
+
+
+/*
+	test 1 :  % ./philo 199 190 60 60 5 : not done yet 
+	
+
+
+*/
