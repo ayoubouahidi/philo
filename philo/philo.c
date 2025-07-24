@@ -40,37 +40,42 @@ void	monitoring_death(t_data *data, int i)
 	end_sim(data);
 }
 
-void	monitoring(t_data *data)
+void	*monitoring(void *args)
 {
 	int	i;
+	t_data	*data;
 
+	data = (t_data *) args;
 	while (1)
 	{
+		if (all_philos_eating(data))
+		{
+			end_sim(data);
+			return (NULL);
+		}
 		i = 0;
 		while (i < data->number_of_philo)
 		{
-			if (all_philos_eating(data))
-			{
-				end_sim(data);
-				return ;
-			}
 			pthread_mutex_lock(&(data->used__mtx[MEAL]));
 			if (get_time(data) - data->philos[i].last_meal > data->time_to_die)
 			{
-				monitoring_death(data, i);
 				pthread_mutex_unlock(&(data->used__mtx[MEAL]));
-				return ;
+				monitoring_death(data, i);
+				return (NULL);
 			}
-			pthread_mutex_unlock(&data->used__mtx[MEAL]);
+			pthread_mutex_unlock(&(data->used__mtx[MEAL]));
 			i++;
 		}
+		usleep(1000);
 	}
+	return (NULL);
 }
 
 void	creat_threads(t_data *data)
 {
 	int			i;
 	pthread_t	arr_threads[data->number_of_philo];
+	pthread_t	monitoring_thread;
 
 	i = 0;
 	while (i < data->number_of_philo)
@@ -78,12 +83,13 @@ void	creat_threads(t_data *data)
 		pthread_create(&arr_threads[i], NULL, routine, &data->philos[i]);
 		i++;
 	}
-	monitoring(data);
+	pthread_create(&monitoring_thread, NULL, monitoring, data);
 	i = 0;
 	while (i < data->number_of_philo)
 	{
 		pthread_join(arr_threads[i], NULL);
 		i++;
 	}
+	pthread_join(monitoring_thread, NULL);
 	free_data(data);
 }
