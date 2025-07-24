@@ -64,6 +64,8 @@ void	sleeping(t_philo *philo)
 void	thinking(t_philo *philo)
 {
 	ft_printstatus(philo, "is thinking");
+	if (philo->data->time_to_eat > philo->data->time_to_sleep)
+		ft_usleep(philo->data->time_to_eat - philo->data->time_to_sleep, philo->data);
 	if (philo->data->number_of_philo % 2 == 1)
 		ft_usleep(15, philo->data);
 }
