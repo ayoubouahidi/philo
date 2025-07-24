@@ -1,16 +1,45 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_3.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ayouahid <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 15:29:34 by ayouahid          #+#    #+#             */
+/*   Updated: 2025/07/24 15:29:36 by ayouahid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-void	eating_print(t_philo *philo)
+void	update_meal_status(t_philo *philo)
 {
-	take_fork(philo);
-	ft_printstatus(philo, "is eating");
+	pthread_mutex_lock(&(philo->data->used__mtx[MEAL_COUNT]));
+	philo->meal_count++;
+	if (philo->data->number_of_times_each_philosopher_must_eat != -1
+		&& philo->meal_count \
+		== philo->data->number_of_times_each_philosopher_must_eat)
+	{
+		pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
+		pthread_mutex_lock(&(philo->data->used__mtx[FINISH]));
+		if (!philo->finish_eating)
+		{
+			philo->finish_eating = 1;
+			pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
+			pthread_mutex_lock(&(philo->data->used__mtx[GLB_FINISH]));
+			philo->data->philos_finished_eating++;
+			pthread_mutex_unlock(&(philo->data->used__mtx[GLB_FINISH]));
+		}
+		else
+			pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
+	}
+	else
+		pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
+	put_forks(philo);
 }
 
 void	eating(t_philo *philo)
 {
-	int	finished_eating;
-
-	finished_eating = 0;
 	pthread_mutex_lock(&(philo->data->used__mtx[FINISH]));
 	if (philo->finish_eating)
 	{
@@ -19,20 +48,11 @@ void	eating(t_philo *philo)
 	}
 	pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
 	eating_print(philo);
-	pthread_mutex_lock(&(philo->data->used__mtx[MEAL_COUNT]));
-	philo->meal_count++;
-	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
 	pthread_mutex_lock(&(philo->data->used__mtx[MEAL]));
 	philo->last_meal = get_time(philo->data);
 	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL]));
 	ft_usleep(philo->data->time_to_eat, philo->data);
-	pthread_mutex_lock(&(philo->data->used__mtx[MEAL_COUNT]));
-	if (philo->data->number_of_times_each_philosopher_must_eat != -1
-		&& philo->meal_count == philo->data->number_of_times_each_philosopher_must_eat)
-		finished_eating = 1;
-	pthread_mutex_unlock(&(philo->data->used__mtx[MEAL_COUNT]));
-	eating_meals(philo, finished_eating);
-	put_forks(philo);
+	update_meal_status(philo);
 }
 
 void	sleeping(t_philo *philo)

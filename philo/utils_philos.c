@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils_philos.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ayouahid <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 15:48:17 by ayouahid          #+#    #+#             */
+/*   Updated: 2025/07/24 15:48:21 by ayouahid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 long long	get_time(t_data *data)
@@ -19,10 +31,16 @@ long long	get_time(t_data *data)
 
 void	ft_printstatus(t_philo *philo, char *status)
 {
+	pthread_mutex_lock(&(philo->data->used__mtx[DEATH]));
+	if (philo->data->flag_death)
+	{
+		pthread_mutex_unlock(&(philo->data->used__mtx[DEATH]));
+		return ;
+	}
 	pthread_mutex_lock(&(philo->data->used__mtx[PRINT]));
-	if (philo->data->flag_death == 0)
-		printf("%lld %d %s \n", get_time(philo->data), philo->id, status);
+	printf("%lld %d %s\n", get_time(philo->data), philo->id, status);
 	pthread_mutex_unlock(&(philo->data->used__mtx[PRINT]));
+	pthread_mutex_unlock(&(philo->data->used__mtx[DEATH]));
 }
 
 int	ft_usleep(long long milliseconds, t_data *data)
@@ -71,4 +89,3 @@ bool	check_each_arg(char *av)
 		return (false);
 	return (true);
 }
-

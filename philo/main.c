@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ayouahid <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 15:26:44 by ayouahid          #+#    #+#             */
+/*   Updated: 2025/07/24 15:26:46 by ayouahid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 void	initialisation_mutex(t_data *data)
@@ -63,8 +75,6 @@ t_data	*initialisation_of_vars(char **av, int ac)
 	return (data);
 }
 
-
-
 bool	check_args(int ac, char **av)
 {
 	int	i;
@@ -78,7 +88,6 @@ bool	check_args(int ac, char **av)
 	}
 	return (true);
 }
-
 
 int	main(int ac, char *av[])
 {

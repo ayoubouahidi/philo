@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_2.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ayouahid <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 15:27:06 by ayouahid          #+#    #+#             */
+/*   Updated: 2025/07/24 15:27:10 by ayouahid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 void	free_data(t_data *data)
@@ -78,4 +90,4 @@ void	eating_meals(t_philo *philo, int finished_eating)
 		philo->finish_eating = 1;
 		pthread_mutex_unlock(&(philo->data->used__mtx[FINISH]));
 	}
-}	
+}
