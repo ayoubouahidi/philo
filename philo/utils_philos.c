@@ -2,11 +2,9 @@
 
 long long	get_time(t_data *data)
 {
-	struct timeval		tv;
-	long long			m_sec;
-	// static long long	start_time;
-	// static pthread_mutex_t	start_time_mutex = PTHREAD_MUTEX_INITIALIZER;
-	long long			result;
+	struct timeval	tv;
+	long long		m_sec;
+	long long		result;
 
 	gettimeofday(&tv, NULL);
 	m_sec = tv.tv_sec * 1000;
@@ -52,3 +50,25 @@ bool	check_death(t_data *data)
 	pthread_mutex_unlock(&(data->used__mtx[DEATH]));
 	return (false);
 }
+
+bool	check_each_arg(char *av)
+{
+	int	i;
+	int	err;
+
+	err = 0;
+	i = 0;
+	if (av[i] == '+')
+		i++;
+	while (i < ft_strlen(av))
+	{
+		if (!ft_isdigit(av[i]))
+			return (false);
+		i++;
+	}
+	ft_atoi_err(av, &err);
+	if (err == 1)
+		return (false);
+	return (true);
+}
+

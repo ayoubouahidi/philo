@@ -2,7 +2,7 @@
 
 void	initialisation_mutex(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < data->number_of_philo)
@@ -20,15 +20,15 @@ void	initialisation_mutex(t_data *data)
 
 void	initialisation_philos(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < data->number_of_philo)
 	{
 		data->philos[i].id = i + 1;
 		data->philos[i].data = data;
-		data->philos[i].fork_l = i ;
-		data->philos[i].fork_r = (i + 1) % data->number_of_philo ;
+		data->philos[i].fork_l = i;
+		data->philos[i].fork_r = (i + 1) % data->number_of_philo;
 		data->philos[i].last_meal = data->start_time;
 		data->philos[i].meal_count = 0;
 		data->philos[i].finish_eating = 0;
@@ -39,7 +39,7 @@ void	initialisation_philos(t_data *data)
 t_data	*initialisation_of_vars(char **av, int ac)
 {
 	t_data	*data;
-	int i;
+	int		i;
 
 	i = 0;
 	data = malloc(sizeof(t_data));
@@ -49,7 +49,7 @@ t_data	*initialisation_of_vars(char **av, int ac)
 	data->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
 		data->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
-	else 
+	else
 		data->number_of_times_each_philosopher_must_eat = -1;
 	data->philos = malloc(sizeof(t_philo) * data->number_of_philo);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->number_of_philo);
@@ -63,30 +63,11 @@ t_data	*initialisation_of_vars(char **av, int ac)
 	return (data);
 }
 
-bool	check_each_arg(char *av)
-{
-	int i;
-	int err;
 
-	err = 0;
-	i = 0;
-	if(av[i] == '+')
-		i++;
-	while(i < ft_strlen(av))
-	{
-		if (!ft_isdigit(av[i]) )
-			return (false);
-		i++;
-	}
-	ft_atoi_err(av, &err);
-	if (err == 1)
-		return (false);
-	return (true);
-}
 
 bool	check_args(int ac, char **av)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (i < ac)
@@ -95,26 +76,24 @@ bool	check_args(int ac, char **av)
 			return (false);
 		i++;
 	}
-	return (true);	
+	return (true);
 }
 
 
 int	main(int ac, char *av[])
-{	
-	t_data *data;
+{
+	t_data	*data;
 
 	if (ac < 5 || ac > 6)
 		return (0);
 	if (!check_args(ac, av))
 		return (0);
-	
 	data = initialisation_of_vars(av, ac);
-	if (data->number_of_philo == 0 || data->number_of_times_each_philosopher_must_eat == 0)
+	if (data->number_of_philo == 0
+		|| data->number_of_times_each_philosopher_must_eat == 0)
 	{
 		printf("INVALID INPUT\n");
-		free(data->philos);
-		free(data->forks);
-		// pthread_mutex_destroy(&data->used__mtx);
+		free_data(data);
 		return (0);
 	}
 	creat_threads(data);

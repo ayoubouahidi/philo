@@ -1,19 +1,5 @@
 #include "philo.h"
 
-int	ft_strlen(char *str)
-{
-	int	i;
-	int count;
-
-	count = 0;
-	i = 0;
-	while (str[i] != '\0')
-	{
-		count++;
-		i++;
-	}
-	return (count);
-}
 
 int	ft_isdigit(int c)
 {
@@ -89,11 +75,9 @@ long	ft_atoi_err(const char *str, int *err)
 	while (str[i] >= 48 && str[i] <= 57)
 	{
 		result = result * 10 + (str[i++] - 48);
-		if (((result > 2147483647) && !cmpmoins)
-			|| ((result > 2147483648) && cmpmoins))
+		if (((result > 2147483647) && !cmpmoins) || ((result > 2147483648)
+				&& cmpmoins))
 			*err = 1;
 	}
 	return (fornotminette1(result, cmpt, cmpmoins, err));
 }
-
-
