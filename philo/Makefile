@@ -1,10 +1,10 @@
 NAME = philo
 
 CC = cc -g
-CFLAGS = -Wall -Wextra -Werror -fsanitize=thread -g3
+CFLAGS = -Wall -Wextra -Werror 
 
 
-SRCS =  main.c utils.c utils_philos.c philo.c  philo_2.c philo_3.c philo_4.c    
+SRCS =  main.c utils.c utils_philos.c philo_threads.c  philo_eating_action.c philo_rules.c philo_seconde_function.c    
 
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
